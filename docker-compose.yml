@@ -1,0 +1,41 @@
+version: '3.4'
+
+networks:
+  mynet:
+volumes:
+    cockroachdb:
+    pgadmin-data:
+services:
+  dbupdateworker:
+    image: ${DOCKER_REGISTRY-}dbupdateworker
+    build:
+      context: .
+      dockerfile: DbUpdateWorker/Dockerfile
+    depends_on:
+        crdb:
+            condition: service_healthy
+    networks:
+        mynet:
+  crdb:
+    image: cockroachdb/cockroach:latest
+    ports:
+      - 26257:26257
+      - 8080:8080
+    command: start-single-node --insecure
+    volumes:
+      - cockroachdb:/cockroach/cockroach-data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health?ready=1"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+    networks:
+        mynet:
+  server:
+    image: ${DOCKER_REGISTRY-}server
+    build:
+      context: .
+      dockerfile: Server/Dockerfile
+    networks:
+        mynet:
+
