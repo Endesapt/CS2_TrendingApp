@@ -5,6 +5,7 @@ networks:
 volumes:
     cockroachdb:
     pgadmin-data:
+    rabbitmq-data:
 services:
   dbupdateworker:
     image: ${DOCKER_REGISTRY-}dbupdateworker
@@ -14,6 +15,8 @@ services:
     depends_on:
         crdb:
             condition: service_healthy
+        rabbitmq:
+            condition: service_started
     networks:
         mynet:
   crdb:
@@ -36,6 +39,24 @@ services:
     build:
       context: .
       dockerfile: Server/Dockerfile
+    depends_on:
+        dbupdateworker:
+            condition: service_started
     networks:
         mynet:
+  rabbitmq:
+    image: rabbitmq:3.10.7-management
+    hostname: rabbitmq
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=1234
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    ports:
+      - 15672:15672
+      - 5672:5672
+    networks:
+        mynet:
+    
 

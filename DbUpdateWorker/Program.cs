@@ -1,5 +1,5 @@
 using DbUpdateWorker;
-using DbUpdateWorker.Data;
+using WeaponsClassLibrary.Data;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
