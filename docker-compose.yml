@@ -6,6 +6,8 @@ volumes:
     cockroachdb:
     pgadmin-data:
     rabbitmq-data:
+    redis-data:
+    redis.conf:
 services:
   dbupdateworker:
     image: ${DOCKER_REGISTRY-}dbupdateworker
@@ -56,7 +58,45 @@ services:
     ports:
       - 15672:15672
       - 5672:5672
+    healthcheck:
+        test: rabbitmq-diagnostics -q ping
+        interval: 30s
+        timeout: 10s
+        retries: 5
+        start_period: 10s
     networks:
         mynet:
+  redis:
+    image: redis:latest
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/root/redis
+      - redis.conf:/usr/local/etc/redis/redis.conf
+    environment:
+      - REDIS_PASSWORD=1234
+      - REDIS_PORT=6379
+    healthcheck:
+        test: ["CMD", "redis-cli","ping"]
+    networks:
+        mynet:
+  telegram-sender:
+    build:
+        context: ./TelegramSender/
+    environment:
+        - BOT_TOKEN=7033082281:AAGx9SKXhKldF1qBbqdLIhB44_93Sq80oII
+        - REDIS_USER=default
+        - REDIS_PASSWORD=1234
+        - REDIS_HOST=redis
+        - RABBITMQ_HOST=amqp://user:1234@rabbitmq
+    depends_on:
+        rabbitmq:
+            condition: service_healthy
+        redis:
+            condition: service_healthy
+    networks:
+        mynet:
+    
     
 
