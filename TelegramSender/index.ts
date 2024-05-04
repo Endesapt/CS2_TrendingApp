@@ -37,7 +37,7 @@ amqp.connect(process.env.RABBITMQ_HOST!, function(error0, connection) {
         console.log("Cannot find Chat Id for SteamID "+ message.userId);
         return;
       }
-      bot.telegram.sendMessage(chatId,`<b>Attention!</b>\n<i>${message.weapon.name}</i> is ${message.event} then ${message.eventPrive}$ at current price of ${message.currentPrice}$ !`,{parse_mode:"HTML"});
+      bot.telegram.sendMessage(chatId,`<b>Attention!</b>\n<i>${message.weaponName}</i> is ${message.event} then ${message.eventPrive}$ at current price of ${message.currentPrice}$ !`,{parse_mode:"HTML"});
     }, {
         noAck: true
       });

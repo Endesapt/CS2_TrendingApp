@@ -19,7 +19,8 @@ namespace Server.Controllers
             _mapper = mapper;
             var user= httpContextAccessor.HttpContext!.User;
             var userIdString = user.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!ExtractIdHelper.ExtractedIdFromClaim(userIdString, out var userId)) userId = -1;
+            if (!ExtractIdHelper.ExtractedIdFromClaim(userIdString, out var userId)) _userId = -1;
+            _userId = userId;
         }
         [HttpPost("/addQuery")]
         public async Task<ActionResult<UserQuery>> AddQuery(UserQueryDto userQuery)

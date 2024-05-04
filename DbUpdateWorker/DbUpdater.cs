@@ -5,6 +5,9 @@ using System.Diagnostics;
 using System.Net.Http.Json;
 using System.Text.Json;
 using WeaponsClassLibrary;
+using RabbitMQ.Client;
+using DbUpdateWorker.Models.RabbitMQ;
+using System.Text;
 
 namespace DbUpdateWorker
 {
@@ -13,9 +16,12 @@ namespace DbUpdateWorker
         private readonly ILogger<DbUpdater> _logger;
         private readonly IServiceProvider _provider;
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IConfiguration _configuration;
         public DbUpdater(IHttpClientFactory factory,
-            IServiceProvider provider,ILogger<DbUpdater> logger)
+            IServiceProvider provider,ILogger<DbUpdater> logger,
+            IConfiguration configuration)
         {
+            _configuration = configuration;
             _logger = logger;
             _httpClientFactory = factory;
             _provider = provider;
@@ -61,6 +67,8 @@ namespace DbUpdateWorker
                                 Price= allWeapons[w.Name].Price,
                                 PriceTime=dateTimeNow
                             };
+                            w.CurrentPrice = weaponPrice.Price;
+                            db.Update(w);
                             db.Add(weaponPrice);
                             allWeapons.Remove(w.Name);
                         }
@@ -72,20 +80,23 @@ namespace DbUpdateWorker
                         {
                             ClassId = weapon.Value.ClassId ?? 0L,
                             IconUrl = weapon.Value.IconUrl,
+                            CurrentPrice = weapon.Value.Price,
                             Name = weapon.Value.Name,
                             Type = weapon.Value.Type,
                         };
                         WeaponPrice weaponPrice = new()
                         {
                             WeaponClassId = newWeapon.ClassId,
-                            Price = weapon.Value.Price,
+                            Price = newWeapon.CurrentPrice,
                             PriceTime = dateTimeNow
                         };
                         db.Add(newWeapon);
                         db.Add(weaponPrice);
+                        
                     }
                     db.SaveChanges();
                     db.ChangeTracker.Clear();
+                    CheckForEvents();
 
                 }
                 catch (Exception ex)
@@ -95,6 +106,55 @@ namespace DbUpdateWorker
                 //8 hours
                 await Task.Delay(1000 * 3600 * 8, stoppingToken);
             }
+        }
+        private void CheckForEvents()
+        {
+            using var scope = _provider.CreateScope();
+            using var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+            var validQueries = db.UserQueries.Include((uq) => uq.Weapon).Where((uq) =>
+                uq.Weapon.CurrentPrice<=uq.MinPrice ||
+                uq.Weapon.CurrentPrice>=uq.MaxPrice
+            );
+            var factory = new ConnectionFactory {
+                HostName = _configuration["RABBITMQ_HOST"],
+                Password = _configuration["RABBITMQ_PASS"],
+                UserName= _configuration["RABBITMQ_USER"]
+            };
+            using var connection = factory.CreateConnection();
+            using var channel = connection.CreateModel();
+            channel.QueueDeclare(queue: "event_messages",
+                     durable: true,
+                     exclusive: false,
+                     autoDelete: false,
+                     arguments: null);
+
+            var serializeOptions = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                WriteIndented = true
+            };
+            foreach (var query in validQueries)
+            {
+                bool isBigger = query.MaxPrice >= query.Weapon.CurrentPrice;
+                var queryDto = new RabbitQueryDto()
+                {
+                    CurrentPrice = query.Weapon.CurrentPrice,
+                    UserId = query.UserId.ToString(),
+                    Event = isBigger ?
+                        RabbitQueryEventType.more : RabbitQueryEventType.less,
+                    EventPrice = isBigger ? query.MaxPrice : query.MinPrice,
+                    WeaponName=query.Weapon.Name
+                };
+                var body = JsonSerializer.Serialize(queryDto,serializeOptions);
+                channel.BasicPublish(exchange: string.Empty,
+                     routingKey: "event_messages",
+                     mandatory:false,
+                     basicProperties: null,
+                     body: Encoding.UTF8.GetBytes(body));
+            }
+            db.RemoveRange(validQueries);
+            db.SaveChanges();
         }
     }
 }

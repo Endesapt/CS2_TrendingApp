@@ -19,6 +19,10 @@ services:
             condition: service_healthy
         rabbitmq:
             condition: service_started
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_USER=user
+      - RABBITMQ_PASS=1234
     networks:
         mynet:
   crdb:
@@ -44,6 +48,8 @@ services:
     depends_on:
         dbupdateworker:
             condition: service_started
+    ports:
+      - 8081:8081
     networks:
         mynet:
   rabbitmq:
@@ -70,7 +76,7 @@ services:
     image: redis:latest
     restart: always
     ports:
-      - "6379:6379"
+      - 6379:6379
     volumes:
       - redis-data:/root/redis
       - redis.conf:/usr/local/etc/redis/redis.conf

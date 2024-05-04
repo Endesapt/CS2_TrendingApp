@@ -3,7 +3,5 @@ class QueryType {
     event: string;
     eventPrive: number;
     currentPrice:number;
-    weapon:{
-        name:string
-    }
+    weaponName:string;
 }

@@ -12,6 +12,6 @@ namespace WeaponsClassLibrary
         public required string? Type { get; set; } = null!;
         [MaxLength(255)]
         public required string Name { get; set; } = null!;
-
+        public required double CurrentPrice {get;set;}
     }
 }

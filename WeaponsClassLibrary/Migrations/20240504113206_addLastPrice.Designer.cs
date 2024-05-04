@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WeaponsClassLibrary.Data;
@@ -11,9 +12,11 @@ using WeaponsClassLibrary.Data;
 namespace WeaponsClassLibrary.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240504113206_addLastPrice")]
+    partial class addLastPrice
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -28,10 +31,13 @@ namespace WeaponsClassLibrary.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<int>("CurrentPrice")
+                        .HasColumnType("integer");
+
                     b.Property<int>("MaxPrice")
                         .HasColumnType("integer");
 
-                    b.Property<int>("MinPrice")
+                    b.Property<int>("MinValue")
                         .HasColumnType("integer");
 
                     b.Property<long>("UserId")
@@ -54,9 +60,6 @@ namespace WeaponsClassLibrary.Migrations
                         .HasColumnType("bigint");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("ClassId"));
-
-                    b.Property<double>("CurrentPrice")
-                        .HasColumnType("double precision");
 
                     b.Property<string>("IconUrl")
                         .IsRequired()
