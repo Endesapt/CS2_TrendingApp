@@ -9,7 +9,9 @@ using WeaponsClassLibrary;
 
 namespace Server.Controllers
 {
-    public class UserQueriesController: Controller
+    [Route("api/")]
+    [ApiController]
+    public class UserQueriesController: ControllerBase
     {
         private readonly IUserQueryService _userQueryService;
         private readonly IMapper _mapper;
@@ -22,7 +24,7 @@ namespace Server.Controllers
             if (!ExtractIdHelper.ExtractedIdFromClaim(userIdString, out var userId)) _userId = -1;
             _userId = userId;
         }
-        [HttpPost("/addQuery")]
+        [HttpPost("addQuery")]
         public async Task<ActionResult<UserQuery>> AddQuery(UserQueryDto userQuery)
         {
             if (_userId == -1) return BadRequest("Cannot get userId from authClaims");
@@ -32,7 +34,7 @@ namespace Server.Controllers
             if (result is null) return BadRequest("Cannot add query");
             return Ok(result);
         }
-        [HttpDelete("/deleteQuery")]
+        [HttpDelete("deleteQuery")]
         public async Task<IActionResult> DeleteQuery(Guid queryId)
         {
             if (_userId == -1) return BadRequest("Cannot get userId from authClaims");
@@ -40,7 +42,7 @@ namespace Server.Controllers
             if (!isGood) return BadRequest("You can't delete this query");
             return Ok();
         }
-        [HttpPut("/updateQuery")]
+        [HttpPut("updateQuery")]
         public async Task<ActionResult<UserQuery>> UpdateQuery(UserQueryDto userQuery,Guid queryId) {
             if (_userId == -1) return BadRequest("Cannot get userId from authClaims");
             var query = _mapper.Map<UserQueryDto, UserQuery>(userQuery);
@@ -50,7 +52,7 @@ namespace Server.Controllers
             if (!isGood || result is null) return BadRequest("You can't modify this query");
             return Ok(result);
         }
-        [HttpGet("/getQueries")]
+        [HttpGet("getQueries")]
         public ActionResult<IEnumerable<UserQuery>> GetQueries()
         {
             if (_userId == -1) return BadRequest("Cannot get userId from authClaims");

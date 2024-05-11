@@ -16,6 +16,7 @@ namespace Server
 
             // Add services to the container.
             builder.Services.AddTransient<IUserQueryService, UserQueryService>();
+            builder.Services.AddTransient<IWeaponService, WeaponService>();
             builder.Services.AddAutoMapper(typeof(Program).Assembly);
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             {
@@ -48,6 +49,9 @@ namespace Server
 
             app.UseAuthorization();
 
+            app.UseCors(builder => builder.AllowAnyOrigin()
+                            .AllowAnyHeader()
+                            .AllowAnyMethod());
 
             app.MapControllers();
 

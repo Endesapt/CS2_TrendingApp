@@ -32,7 +32,11 @@ namespace DbUpdateWorker.Models.ResponseModels
         public string Name { get; set; } = null!;
 
         [System.Text.Json.Serialization.JsonIgnore]
-        public double Price { get; set; }
+        public double CurrentPrice { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public double WeekPrice { get; set; } = 0;
+        [System.Text.Json.Serialization.JsonIgnore]
+        public double MonthPrice { get; set; } = 0;
         [NotMapped]
         [JsonPropertyName("price")]
         public Dictionary<string, Price> Prices { get; set; } = null!;

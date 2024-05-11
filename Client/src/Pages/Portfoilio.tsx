@@ -10,9 +10,8 @@ export default function Portfolio() {
         iconUrl: "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot621FABz7PLfYQJR-M65moW0m_7zO6-fwj9TusZ3j-2T8dT22lW2-hBtZW3wcIOVJgZtaArWrlHvxei91Me06IOJlyVHZQVsTw",
         name: "AWP | Black Nile (Minimal Wear)",
         currentPrice: 9.38,
-        price24H: 0.03,
-        price30D: -1.54,
-        price7D: -5.54,
+        weekPrice: -1.54,
+        monthPrice: -5.54,
         maxPrice: 10.05,
         minPrice: 5.45
 

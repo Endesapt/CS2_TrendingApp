@@ -1,11 +1,10 @@
+import { priceStyle } from "../Helper/PercentStyleHelper";
 import { WeaponTrendingModel } from "../Models/WeaponTrendingModel";
 
 export default function WeaponTrending(model:WeaponTrendingModel) {
     const imageUrl=`https://steamcommunity-a.akamaihd.net/economy/image/${model.iconUrl}`;
-    const styleBase=" w-20 flex items-center ";
-    const h24Class=styleBase+(model.price24H>0?"text-green-600":"text-red-600");
-    const d7Class=styleBase+(model.price7D>0?"text-green-600":"text-red-600");
-    const d30Class=styleBase+(model.price30D>0?"text-green-600":"text-red-600");
+    const weekPrice= priceStyle(model.weekPrice,model.currentPrice);
+    const monthPrice= priceStyle(model.monthPrice,model.currentPrice);
     const nameText = document.createElement("textarea");
     nameText.innerHTML = model.name;
     return (
@@ -14,9 +13,8 @@ export default function WeaponTrending(model:WeaponTrendingModel) {
             <div className=" w-20  overflow-hidden"><img alt={nameText.value} src={imageUrl}/></div>
             <div className=" w-96 flex items-center font-normal text-white">{nameText.value}</div>
             <div className=" w-28 flex items-center text-white">${model.currentPrice}</div>
-            <div className={h24Class}>{model.price24H}%</div>
-            <div className={d7Class}>{model.price7D}%</div>
-            <div className={d30Class}>{model.price30D}%</div>
+            <div className={weekPrice.style}>{weekPrice.percent}%</div>
+            <div className={monthPrice.style}>{monthPrice.percent}%</div>
         </div>
     )
 }
