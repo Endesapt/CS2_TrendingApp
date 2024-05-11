@@ -1,9 +1,9 @@
+import { priceStyle } from "../Helper/PercentStyleHelper";
 import{WeaponProfileModel} from "../Models/WeaponProfileModel"
 export default function WeaponPortfolio(model:WeaponProfileModel) {
     const imageUrl=`https://steamcommunity-a.akamaihd.net/economy/image/${model.iconUrl}`;
-    const h24Class=" w-20 flex items-center "+(model.price24H>0?"text-green-600":"text-red-600");
-    const d7Class=" w-20 flex items-center "+(model.price7D>0?"text-green-600":"text-red-600");
-    const d30Class=" w-20 flex items-center "+(model.price30D>0?"text-green-600":"text-red-600");
+    const weekPrice= priceStyle(model.weekPrice,model.currentPrice);
+    const monthPrice= priceStyle(model.monthPrice,model.currentPrice);
     const nameText = document.createElement("textarea");
     nameText.innerHTML = model.name;
     return (
@@ -14,9 +14,8 @@ export default function WeaponPortfolio(model:WeaponProfileModel) {
             <div className=" w-28 flex items-center text-white">${model.currentPrice}</div>
             <div className=" w-28 flex items-center text-white">${model.maxPrice}</div>
             <div className=" w-28 flex items-center text-white">${model.minPrice}</div>
-            <div className={h24Class}>{model.price24H}%</div>
-            <div className={d7Class}>{model.price7D}%</div>
-            <div className={d30Class}>{model.price30D}%</div>
+            <div className={weekPrice.style}>{weekPrice.percent}%</div>
+            <div className={monthPrice.style}>{monthPrice.percent}%</div>
             <div className="flex items-center">
                 <button className="px-4 rounded-md h-8 bg-[#334155] hover:bg-slate-500 ease-in duration-150">Delete</button>
             </div>          

@@ -1,7 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.Json;
+using System.ComponentModel.DataAnnotations;
 
 namespace WeaponsClassLibrary
 {
+    [Index(nameof(CurrentPrice))]
     public class Weapon
     {
         [Key]
@@ -13,5 +16,8 @@ namespace WeaponsClassLibrary
         [MaxLength(255)]
         public required string Name { get; set; } = null!;
         public required double CurrentPrice {get;set;}
+
+        public double WeekPrice { get; set; } = 0;
+        public double MonthPrice { get; set; } = 0;
     }
 }

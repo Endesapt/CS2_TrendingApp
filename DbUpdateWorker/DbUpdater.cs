@@ -47,12 +47,29 @@ namespace DbUpdateWorker
                     foreach (var weapon in allWeapons)
                     {
                         Price? price = null;
-                        if (weapon.Value.Prices == null) { }
-                        else if (weapon.Value.Prices.TryGetValue("24_hours", out price)) { }
-                        else if (weapon.Value.Prices.TryGetValue("7_days", out price)) { }
-                        else if (weapon.Value.Prices.TryGetValue("30_days", out price)) { }
-                        else if (weapon.Value.Prices.TryGetValue("all_time", out price)) { }
-                        weapon.Value.Price = price?.Average ?? 0;
+                        if (weapon.Value.Prices == null)
+                        {
+                            weapon.Value.CurrentPrice = 0;
+                            continue;
+                        }
+
+                        if (weapon.Value.Prices.TryGetValue("24_hours", out price))
+                        {
+                            weapon.Value.CurrentPrice = price?.Average ?? 0;
+                        }
+                        else if (weapon.Value.Prices.TryGetValue("all_time", out price))
+                        {
+                            weapon.Value.CurrentPrice = price?.Average ?? 0;
+                        }
+
+                        if (weapon.Value.Prices.TryGetValue("7_days", out price))
+                        {
+                            weapon.Value.WeekPrice = price?.Average ?? 0;
+                        }
+                        if (weapon.Value.Prices.TryGetValue("30_days", out price))
+                        {
+                            weapon.Value.MonthPrice = price?.Average ?? 0;
+                        }
                     }
                     using var scope = _provider.CreateScope();
                     using var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -64,10 +81,12 @@ namespace DbUpdateWorker
                             WeaponPrice weaponPrice = new()
                             {
                                 WeaponClassId = w.ClassId,
-                                Price= allWeapons[w.Name].Price,
+                                Price= allWeapons[w.Name].CurrentPrice,
                                 PriceTime=dateTimeNow
                             };
                             w.CurrentPrice = weaponPrice.Price;
+                            w.WeekPrice = allWeapons[w.Name].WeekPrice;
+                            w.MonthPrice = allWeapons[w.Name].MonthPrice;
                             db.Update(w);
                             db.Add(weaponPrice);
                             allWeapons.Remove(w.Name);
@@ -80,7 +99,9 @@ namespace DbUpdateWorker
                         {
                             ClassId = weapon.Value.ClassId ?? 0L,
                             IconUrl = weapon.Value.IconUrl,
-                            CurrentPrice = weapon.Value.Price,
+                            CurrentPrice = weapon.Value.CurrentPrice,
+                            WeekPrice=weapon.Value.WeekPrice,
+                            MonthPrice=weapon.Value.MonthPrice,
                             Name = weapon.Value.Name,
                             Type = weapon.Value.Type,
                         };
