@@ -3,19 +3,35 @@ import { WeaponProfileModel } from "../Models/WeaponProfileModel";
 import WeaponPortfolio from "../Components/WeaponPortfolio";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDollarSign, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import { useEffect, useState } from "react";
 
 export default function Portfolio() {
     const model: WeaponProfileModel = {
-        id: 1,
-        iconUrl: "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot621FABz7PLfYQJR-M65moW0m_7zO6-fwj9TusZ3j-2T8dT22lW2-hBtZW3wcIOVJgZtaArWrlHvxei91Me06IOJlyVHZQVsTw",
-        name: "AWP | Black Nile (Minimal Wear)",
-        currentPrice: 9.38,
-        weekPrice: -1.54,
-        monthPrice: -5.54,
+        id: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        weapon:{
+            classId:null,
+            iconUrl: "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot621FABz7PLfYQJR-M65moW0m_7zO6-fwj9TusZ3j-2T8dT22lW2-hBtZW3wcIOVJgZtaArWrlHvxei91Me06IOJlyVHZQVsTw",
+            name: "AWP | Black Nile (Minimal Wear)",
+            currentPrice: 9.38,
+            weekPrice: -1.54,
+            monthPrice: -5.54,
+        },
         maxPrice: 10.05,
         minPrice: 5.45
 
     }
+    const [weapons,setWeapons]=useState(new Array<WeaponProfileModel>(0));
+    const url = new URL("getQueries",process.env.REACT_APP_API_URL!);
+    useEffect(()=> {
+        fetch(
+            url
+        ).then((response) => response.json())
+        .then((data)=>{
+            setWeapons(data);
+        });
+    },[])
+
+
     const procentStyle = 80 > 0 ? "text-green-500" : "text-red-500";
     return (<div className=" mt-12 ml-10 flex flex-col gap-12">
         <h1 className=' text-4xl font-bold dark:text-slate-300 text-muted-800'>Конан Дойл's Portfolio</h1>
@@ -82,14 +98,16 @@ export default function Portfolio() {
                 <div className=" w-28">Steam Price</div>
                 <div className=" w-28">Max Price</div>
                 <div className=" w-28">Min Price</div>
-                <div className=" w-20">24H</div>
                 <div className=" w-20">7D</div>
                 <div className=" w-20">30D</div>
             </div>
-            {Array(15).fill(0).map((el) => (
+            {weapons.map((el) => (
                 <WeaponPortfolio {...model} />
             ))
             }
+            {weapons.length==0? <div className="flex gap-2 p-2  bg-transparent ">
+                <div className=" text-4xl font-bold dark:text-slate-300 text-muted-800"> You have no events yet! Add one using form above</div>
+            </div>:null}
         </div>
     </div>)
 }

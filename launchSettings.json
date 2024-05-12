@@ -4,8 +4,12 @@
       "commandName": "DockerCompose",
       "commandVersion": "1.0",
       "serviceActions": {
+        "crdb": "StartWithoutDebugging",
         "dbupdateworker": "StartDebugging",
-        "server": "StartDebugging"
+        "rabbitmq": "StartWithoutDebugging",
+        "redis": "StartWithoutDebugging",
+        "server": "StartDebugging",
+        "telegram-sender": "StartWithoutDebugging"
       }
     }
   }

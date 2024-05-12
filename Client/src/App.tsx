@@ -15,7 +15,7 @@ function App() {
           <img alt="logo" src="logo.png"
             className=' h-16 w-16 rounded-full'/>
         </div>
-        <div className='flex flex-row items-center justify-center gap-4 flex-1'>
+        <div className='flex  flex-row items-center justify-center gap-4 flex-1'>
           <Link to="/trending" className=' flex justify-center items-center flex-col w-[80px] h-[80px] rounded-md hover:bg-slate-700 hover:text-stone-100 text-sm ease-linear duration-200'>
             <FontAwesomeIcon icon={faArrowTrendUp} size="xl" />
             <p>Trending</p>
@@ -36,10 +36,9 @@ function App() {
         <div className='flex items-center flex-col justify-center mr-8'>
           <img alt="source" src="https://avatars.akamai.steamstatic.com/24263dcade9dcd8fbd1ef5c6472b1377c7df7f36_full.jpg"
             className=' h-14 w-14 rounded-full'/>
-          <p className='text-xs'>Your Menu</p>
         </div>
       </div>
-      <div className=" bg-slate-900 overflow-scroll grid grid-cols-[1fr_auto_1fr]">
+      <div className="h-full bg-slate-900 overflow-scroll grid grid-cols-[1fr_auto_1fr]">
           <div></div>
           <Routes>
             <Route path="/trending" element={<Trending />} />

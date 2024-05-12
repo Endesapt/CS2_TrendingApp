@@ -1,4 +1,5 @@
-﻿using Server.Services.Interfaces;
+﻿using Server.Models.ResponseModels;
+using Server.Services.Interfaces;
 using WeaponsClassLibrary;
 using WeaponsClassLibrary.Data;
 
@@ -11,6 +12,25 @@ namespace Server.Services.Implementation
         {
             _context = context;
         }
+
+        public IEnumerable<SearchModel> FindWeapons(string searchString)
+        {
+            searchString = searchString.Trim().ToLower();
+            var res = _context.Weapons.Where(w => w.Name.ToLower().Contains(searchString)).Select(w => new SearchModel
+            {
+                ResultId = w.ClassId.ToString(),
+                ResultString=w.Name
+
+            }).Take(5);
+            return res;
+           
+        }
+
+        public Weapon? GetWeaponById(long id)
+        {
+            return _context.Weapons.FirstOrDefault(w=>w.ClassId==id);
+        }
+
         public IEnumerable<Weapon> GetWeapons(int page, double from, double to, out bool hasMorePages)
         {
             var weapons = _context.Weapons

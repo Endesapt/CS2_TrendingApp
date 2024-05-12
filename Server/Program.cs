@@ -1,4 +1,6 @@
 
+using Elastic.Clients.Elasticsearch;
+using Elastic.Transport;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
@@ -12,6 +14,9 @@ namespace Server
     {
         public static void Main(string[] args)
         {
+
+            var client = new ElasticsearchClient();
+
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.

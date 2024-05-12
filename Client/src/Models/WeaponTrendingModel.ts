@@ -1,5 +1,5 @@
 export class WeaponTrendingModel{
-    id:number;
+    classId:number|null;
     iconUrl:string;
     name:string;
     currentPrice:number;
