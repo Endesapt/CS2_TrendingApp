@@ -105,23 +105,6 @@ services:
             condition: service_healthy
     networks:
         mynet:
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
-    ports:
-        - 9200:9200
-    environment:
-        - node.name=es01
-        - cluster.name=es-docker-cluster
-        - cluster.initial_master_nodes=es01
-        - bootstrap.memory_lock=true
-        - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-        - "http.cors.enabled=true"
-        - "http.cors.allow-headers=X-Requested-With,X-Auth-Token,Content-Type,Content-Length,Authorization"
-        - "http.cors.allow-credentials=true"
-        - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
-        
-  
-
         
 
    

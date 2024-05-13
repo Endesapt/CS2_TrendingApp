@@ -3,9 +3,19 @@ import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 import WeaponInventory from "../Components/WeaponInventory";
+import { WeaponTrendingModel } from "../Models/WeaponTrendingModel";
 
 export default function Inventory(){
     const weapons=Array(15).fill(0);
+    const model: WeaponTrendingModel = {
+            classId:null,
+            iconUrl: "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot621FABz7PLfYQJR-M65moW0m_7zO6-fwj9TusZ3j-2T8dT22lW2-hBtZW3wcIOVJgZtaArWrlHvxei91Me06IOJlyVHZQVsTw",
+            name: "AWP | Black Nile (Minimal Wear)",
+            currentPrice: 9.38,
+            weekPrice: -1.54,
+            monthPrice: -5.54,
+
+    }
     return(<div className="ml-10 mt-12">
         <div className="flex flex-col gap-2 mb-6">
             <h1 className="text-3xl font-bold text-slate-200 ">Конан Дойл's Inventory </h1>
@@ -36,7 +46,7 @@ export default function Inventory(){
                     <button className=" px-6 py-2 rounded-md border border-slate-600 bg-slate-600 flex justify-center">Fetch</button>
                 </div>
                 <div className="mr-10 inventory_wrapper">
-                    {weapons.map(weapon=>(<WeaponInventory/>))}
+                    {weapons.map(weapon=>(<WeaponInventory {...model}/>))}
                 </div>
             </div>
             

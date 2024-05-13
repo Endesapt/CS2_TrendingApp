@@ -17,7 +17,7 @@ namespace WeaponsClassLibrary
         [ForeignKey(nameof(WeaponClassId))]
         public Weapon Weapon { get; set; } = null!;
         public required long WeaponClassId {  get; set; }
-        public required int MaxPrice { get; set; } = int.MaxValue;
-        public required int MinPrice { get; set; }=int.MinValue;
+        public required int MaxPrice { get; set; }
+        public required int MinPrice { get; set; }=0;
     }
 }

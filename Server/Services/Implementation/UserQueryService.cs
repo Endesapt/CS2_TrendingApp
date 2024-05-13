@@ -1,4 +1,5 @@
-﻿using Server.Services.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using Server.Services.Interfaces;
 using WeaponsClassLibrary;
 using WeaponsClassLibrary.Data;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
@@ -39,7 +40,7 @@ namespace Server.Services.Implementation
 
         public IEnumerable<UserQuery> GetQueries(long userId)
         {
-            return _context.UserQueries.Where(q => q.UserId == userId);
+            return _context.UserQueries.Where(q => q.UserId == userId).Include(uq=>uq.Weapon);
         }
 
         public async Task<(UserQuery?,bool)> UpdateQuery(UserQuery query)
