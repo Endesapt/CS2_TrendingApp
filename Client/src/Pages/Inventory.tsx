@@ -20,18 +20,13 @@ export default function Inventory() {
     }
     function getInventory(){
         const id=idInputRef.current?.value;
+        const url=new URL("getInventory",process.env.REACT_APP_API_URL!);
+        url.searchParams.set("userId",id!);
         fetch(
-            `https://steamcommunity.com/inventory/${id}/730/2?l=english&count=100`,{
-                headers: {
-                    "Access-Control-Allow-Origin":'*'
-                    // 'Content-Type': 'application/x-www-form-urlencoded',
-                },
-            }
+            url
         ).then((response) => response.json())
         .then((data)=>{
-            for(const asset of data.assets){
-                console.log(asset);
-            }
+            setWeapons(data);
         });
         
     }
@@ -65,7 +60,7 @@ export default function Inventory() {
             </div>
         </div>
         <div className="mr-10 inventory_wrapper">
-            {weapons?weapons.map(weapon => (<WeaponInventory {...model} />)):null}
+            {weapons?weapons.map(weapon => (<WeaponInventory {...weapon} />)):null}
         </div>
     </div>)
 }

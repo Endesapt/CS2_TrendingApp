@@ -15,13 +15,13 @@ namespace Server
         public static void Main(string[] args)
         {
 
-            var client = new ElasticsearchClient();
-
             var builder = WebApplication.CreateBuilder(args);
+            builder.Services.AddHttpClient();
 
             // Add services to the container.
             builder.Services.AddTransient<IUserQueryService, UserQueryService>();
             builder.Services.AddTransient<IWeaponService, WeaponService>();
+            builder.Services.AddTransient<IInventoryService, InventoryService>();
             builder.Services.AddAutoMapper(typeof(Program).Assembly);
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             {
