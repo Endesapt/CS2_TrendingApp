@@ -9,5 +9,6 @@ namespace Server.Services.Interfaces
         IEnumerable<SearchModel> FindWeapons(string searchString);
 
         Weapon? GetWeaponById(long id);
+        IEnumerable<WeaponPrice> GetWeaponPriceHistory(string id);
     }
 }

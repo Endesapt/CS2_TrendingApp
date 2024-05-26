@@ -31,6 +31,13 @@ namespace Server.Services.Implementation
             return _context.Weapons.FirstOrDefault(w=>w.ClassId==id);
         }
 
+        public IEnumerable<WeaponPrice> GetWeaponPriceHistory(string id)
+        {
+            long weaponId=long.Parse(id);
+            var res=_context.WeaponsPrices.Where(wp=>wp.WeaponClassId==weaponId).OrderBy(wp=>wp.PriceTime);
+            return res;
+        }
+
         public IEnumerable<Weapon> GetWeapons(int page, double from, double to, out bool hasMorePages)
         {
             var weapons = _context.Weapons

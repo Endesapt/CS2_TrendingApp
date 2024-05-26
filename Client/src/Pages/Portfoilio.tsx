@@ -61,6 +61,7 @@ export default function Portfolio() {
             method:"POST",
             headers: {
                 "Content-Type": "application/json",
+                
                 // 'Content-Type': 'application/x-www-form-urlencoded',
             },
             body:JSON.stringify({
@@ -133,7 +134,7 @@ export default function Portfolio() {
                 <div className=" w-20">30D</div>
             </div>
             {profileWeapons.map((el) => (
-                <WeaponPortfolio {...el} />
+                <WeaponPortfolio model={el} setProfileWeapons={setProfileWeapons}/>
             ))
             }
             {profileWeapons.length==0? <div className="flex gap-2 p-2  bg-transparent ">

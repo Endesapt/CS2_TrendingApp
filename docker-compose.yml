@@ -20,7 +20,7 @@ services:
         crdb:
             condition: service_healthy
         rabbitmq:
-            condition: service_started
+            condition: service_healthy
     environment:
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_USER=user

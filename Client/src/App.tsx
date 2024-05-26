@@ -6,6 +6,7 @@ import { Route, Routes, Navigate, Link } from 'react-router-dom'
 import Trending from './Pages/Trending';
 import Inventory from './Pages/Inventory';
 import Portfolio from './Pages/Portfoilio';
+import Compare from './Pages/Compare';
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
             <Route path="/trending" element={<Trending />} />
             <Route path="/inventory" element={<Inventory />} />
             <Route path="/portfolio" element={<Portfolio />} />
+            <Route path="/comparison" element={<Compare />} />
             <Route path="*" element={<Navigate to="/trending" />} />
           </Routes>
           <div></div>

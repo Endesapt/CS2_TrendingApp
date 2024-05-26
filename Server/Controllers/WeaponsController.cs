@@ -43,5 +43,21 @@ namespace Server.Controllers
             if (res == null) return BadRequest($"No weapon with such Id: {id}");
             return Ok(res);
         }
+        [HttpGet("getWeaponPriceHistory")]
+        public ActionResult<IEnumerable<WeaponPrice>> GetWeaponPriceHistory(string id)
+        {
+            if (id == null) return BadRequest("No id provided");
+            var prices = _weaponService.GetWeaponPriceHistory(id);
+            if (prices == null || prices.Count()==0) return BadRequest($"No weapon with such Id: {id}");
+            var res = new WeaponHistoryResponse()
+            {
+                WeaponClassId = id,
+                Prices=prices.Select(p=>new HistoryPriceInfo() { 
+                    Price=p.Price,
+                    PriceTime=p.PriceTime,  
+                }),
+            };
+            return Ok(res);
+        }
     }
 }
