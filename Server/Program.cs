@@ -3,10 +3,13 @@ using Elastic.Clients.Elasticsearch;
 using Elastic.Transport;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using Npgsql;
 using Server.Services.Implementation;
 using Server.Services.Interfaces;
 using WeaponsClassLibrary.Data;
+using AspNet.Security.OpenId;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Server
 {
@@ -17,6 +20,21 @@ namespace Server
 
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddHttpClient();
+
+            //AUTH
+            builder.Services.AddAuthentication(options =>
+                {
+                    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                })
+
+            .AddCookie(options =>
+            {
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.SameSite = SameSiteMode.None;
+                options.LoginPath = "/login";
+                options.LogoutPath = "/signout";
+            })
+            .AddSteam();
 
             // Add services to the container.
             builder.Services.AddTransient<IUserQueryService, UserQueryService>();
@@ -50,10 +68,11 @@ namespace Server
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
+            
             app.UseCors(builder => builder.AllowAnyOrigin()
                             .AllowAnyHeader()
                             .AllowAnyMethod());

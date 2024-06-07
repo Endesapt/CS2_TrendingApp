@@ -8,16 +8,8 @@ import { createRef, useState } from "react";
 
 export default function Inventory() {
     const [weapons,setWeapons] = useState<Array<WeaponTrendingModel>>();
+    const [allWeaponsCost,setCost]=useState(0);
     const idInputRef=createRef<HTMLInputElement>();
-    const model: WeaponTrendingModel = {
-        classId: null,
-        iconUrl: "-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot621FABz7PLfYQJR-M65moW0m_7zO6-fwj9TusZ3j-2T8dT22lW2-hBtZW3wcIOVJgZtaArWrlHvxei91Me06IOJlyVHZQVsTw",
-        name: "AWP | Black Nile (Minimal Wear)",
-        currentPrice: 9.38,
-        weekPrice: -1.54,
-        monthPrice: -5.54,
-
-    }
     function getInventory(){
         const id=idInputRef.current?.value;
         const url=new URL("getInventory",process.env.REACT_APP_API_URL!);
@@ -27,11 +19,13 @@ export default function Inventory() {
         ).then((response) => response.json())
         .then((data)=>{
             setWeapons(data);
+            const sum=data.reduce((partialSum:number, a:{currentPrice:number}) => partialSum + a.currentPrice, 0);
+            setCost(sum);
         });
         
     }
-    return (<div className="ml-10 mt-12">
-        <div className="flex flex-col gap-2 mb-6">
+    return (<div className="ml-10 mt-12 flex flex-col gap-6">
+        <div className="flex flex-col gap-2">
             <h1 className="text-3xl font-bold text-slate-200 ">Конан Дойл's Inventory </h1>
             <h2 className="text-xl text-slate-300 ">Track Конан Дойл's inventory and see their trade history. See the value of their inventory and their most expensive items.</h2>
         </div>
@@ -48,16 +42,24 @@ export default function Inventory() {
                     </Link>
                 </div>
             </div>
-            <div className="h-16 flex flex-row items-end gap-6 mb-20">
-                <div className="w-60 text-[14px]">
-                    <label>Search </label>
-                    <div className="rounded-md border-slate-700 border p-2">
-                        <FontAwesomeIcon icon={faMagnifyingGlass} />
-                        <input ref={idInputRef} value="76561198970753428" placeholder="Insert Id..." className=" border-none bg-slate-900 ml-2 text-slate-100" />
+            <div className="h-16 flex flex-col">
+                <div className="flex flex-row items-end gap-6">
+                    <div className="w-60 text-[14px]">
+                        <label>Search </label>
+                        <div className="rounded-md border-slate-700 border p-2">
+                            <FontAwesomeIcon icon={faMagnifyingGlass} />
+                            <input ref={idInputRef} value="76561198970753428" placeholder="Insert Id..." className=" border-none bg-slate-900 ml-2 text-slate-100" />
+                        </div>
                     </div>
+                    <button onClick={()=>getInventory()} className=" px-6 py-2 rounded-md border border-slate-600 bg-slate-600 flex justify-center">Fetch</button>
                 </div>
-                <button onClick={()=>getInventory()} className=" px-6 py-2 rounded-md border border-slate-600 bg-slate-600 flex justify-center">Fetch</button>
+                <div>
+                    {allWeaponsCost>0?<p className="text-xl text-slate-300 py-5">
+                        Total weapons cost: {allWeaponsCost}$
+                    </p>:null}
+                </div>
             </div>
+           
         </div>
         <div className="mr-10 inventory_wrapper">
             {weapons?weapons.map(weapon => (<WeaponInventory {...weapon} />)):null}

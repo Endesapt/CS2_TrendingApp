@@ -20,6 +20,7 @@ namespace Server.Controllers
         public ActionResult<GetWeaponsModel> GetWeapons(int page=1,double from=0,double to=10000)
         {
             if (from >= to) return BadRequest("From must be greater then to");
+            if (page < 1) return BadRequest("Page must be greater than 1");
             var weapons = _weaponService.GetWeapons(page,from,to, out var hasMorePages);
             GetWeaponsModel model = new GetWeaponsModel() {
                 Weapons=weapons,
