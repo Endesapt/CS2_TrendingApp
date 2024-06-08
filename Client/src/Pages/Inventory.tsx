@@ -4,9 +4,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 import WeaponInventory from "../Components/WeaponInventory";
 import { WeaponTrendingModel } from "../Models/WeaponTrendingModel";
-import { createRef, useState } from "react";
+import { createRef, useContext, useState } from "react";
+import { UserContextType } from "../Models/UserContextType";
+import { UserContext } from "../Provider/UserProvider";
 
 export default function Inventory() {
+    const userContext=useContext(UserContext) as UserContextType;
     const [weapons,setWeapons] = useState<Array<WeaponTrendingModel>>();
     const [allWeaponsCost,setCost]=useState(0);
     const idInputRef=createRef<HTMLInputElement>();
@@ -24,21 +27,26 @@ export default function Inventory() {
         });
         
     }
+    if(!userContext.isAuthenticated){
+        return <div className="ml-10 mt-12 flex flex-col gap-6">
+            <div className="text-3xl font-bold text-slate-200"> You should sign in with Steam to see your inventory</div>
+        </div>
+    }
     return (<div className="ml-10 mt-12 flex flex-col gap-6">
         <div className="flex flex-col gap-2">
-            <h1 className="text-3xl font-bold text-slate-200 ">Конан Дойл's Inventory </h1>
-            <h2 className="text-xl text-slate-300 ">Track Конан Дойл's inventory and see their trade history. See the value of their inventory and their most expensive items.</h2>
+            <h1 className="text-3xl font-bold text-slate-200 ">{userContext.userName}'s Inventory </h1>
+            <h2 className="text-xl text-slate-300 ">Track {userContext.userName}'s inventory and see their trade history. See the value of their inventory and their most expensive items.</h2>
         </div>
         <div className="flex w-full gap-6">
             <div className=" min-w-80 flex gap-4 h-32 rounded-lg bg-slate-800 border-slate-600 p-4 border">
-                <img alt='your profile' src="https://avatars.akamai.steamstatic.com/24263dcade9dcd8fbd1ef5c6472b1377c7df7f36_full.jpg"
+                <img alt='your profile' src={`https://avatars.akamai.steamstatic.com/${userContext.imageHash}`}
                     className="w-20 h-20 rounded-lg"
                 />
                 <div className="flex flex-col gap-1 h-20">
-                    <p className="text-slate-300 text-2xl font-bold">Конан Дойл</p>
-                    <Link to={"https://steamcommunity.com/profiles/76561198970753428"} className="text-slate-300 hover:text-slate-100 font-bold flex items-center">
+                    <p className="text-slate-300 text-2xl font-bold">{userContext.userName}</p>
+                    <Link to={`https://steamcommunity.com/profiles/${userContext.userId}`} className="text-slate-300 hover:text-slate-100 font-bold flex items-center">
                         <FontAwesomeIcon icon={faSteam} />
-                        <p className="ml-2">76561198970753428</p>
+                        <p className="ml-2">{userContext.userId}</p>
                     </Link>
                 </div>
             </div>
@@ -48,7 +56,7 @@ export default function Inventory() {
                         <label>Search </label>
                         <div className="rounded-md border-slate-700 border p-2">
                             <FontAwesomeIcon icon={faMagnifyingGlass} />
-                            <input ref={idInputRef} value="76561198970753428" placeholder="Insert Id..." className=" border-none bg-slate-900 ml-2 text-slate-100" />
+                            <input ref={idInputRef} value={userContext.userId?.toString()} placeholder="Insert Id..." className=" border-none bg-slate-900 ml-2 text-slate-100" />
                         </div>
                     </div>
                     <button onClick={()=>getInventory()} className=" px-6 py-2 rounded-md border border-slate-600 bg-slate-600 flex justify-center">Fetch</button>

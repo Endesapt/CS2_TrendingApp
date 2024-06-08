@@ -53,6 +53,7 @@ namespace Server
                 connStringBuilder.Database = "db";
                 options.UseNpgsql(connStringBuilder.ConnectionString);
             });
+            
             builder.Services.AddControllers();
             builder.Services.AddHttpContextAccessor();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -67,18 +68,15 @@ namespace Server
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
-
             app.UseAuthentication();
             app.UseAuthorization();
-
-            
-            app.UseCors(builder => builder.AllowAnyOrigin()
+            app.UseHttpsRedirection();
+            app.UseCors(builder => builder.WithOrigins("http://localhost:3000")
                             .AllowAnyHeader()
-                            .AllowAnyMethod());
-
+                            .AllowAnyMethod()
+                            .AllowCredentials());
+            
             app.MapControllers();
-
             app.Run();
         }
     }

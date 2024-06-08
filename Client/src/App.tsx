@@ -18,6 +18,7 @@ import { Context } from 'telegraf';
 function App() {
   const userContext=useContext(UserContext) as UserContextType;
   userContext.parseUserInfo();
+  
   return (
     
       <div className="flex flex-col h-full text-slate-300">
@@ -44,9 +45,11 @@ function App() {
             <p>Portfolio</p>
           </Link>
         </div>
-        <div onClick={()=>{userContext.login()}} className='flex items-center flex-col justify-center mr-8'>
-          <img alt="source" src="https://avatars.akamai.steamstatic.com/24263dcade9dcd8fbd1ef5c6472b1377c7df7f36_full.jpg"
-            className=' h-14 w-14 rounded-full'/>
+        <div className='flex items-center flex-col justify-center mr-8'>
+          {userContext.isAuthenticated?<img alt="source" src={`https://avatars.akamai.steamstatic.com/${userContext.imageHash}`}
+            className=' h-14 w-14 rounded-full'/>: 
+            <div onClick={()=>{userContext.login()}} className='h-14 w-14 rounded-full bg-slate-800 flex items-center hover:cursor-pointer'>LOGIN</div>}
+            {userContext.isAuthenticated?<div className='hover:cursor-pointer' onClick={()=>{userContext.logout()}}>LOGOUT</div>:null}
         </div>
       </div>
       <div className="h-full bg-slate-900 overflow-scroll grid grid-cols-[1fr_auto_1fr]">

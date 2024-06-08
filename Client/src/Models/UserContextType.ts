@@ -1,10 +1,10 @@
 export type UserContextType={
-    isAuthorized:boolean;
+    isAuthenticated:boolean;
     parsedUserInfo:boolean;
     userId:number|null;
-    username:string|null;
-    userImageHash:string|null;
-    login:()=>void;
-    logout:()=>void;
-    parseUserInfo:()=>void;
+    userName:string|null;
+    imageHash:string|null;
+    login:()=>Promise<void>;
+    logout:()=>Promise<void>;
+    parseUserInfo:()=>Promise<void>;
 }

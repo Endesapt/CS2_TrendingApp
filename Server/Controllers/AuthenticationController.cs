@@ -38,6 +38,7 @@ namespace Server.Controllers
         [HttpGet("~/userInfo")]
         public IActionResult GetUserInfo()
         {
+            var Claims = HttpContext.User.Claims;
             if (!User.Identity.IsAuthenticated)
             {
                 return Ok(new UserInfoModel()
@@ -47,7 +48,7 @@ namespace Server.Controllers
             }
             return Ok(new UserInfoModel()
             {
-                IsAuthenticated = false,
+                IsAuthenticated = true,
                 UserId= 76561198970753428,
                 UserName="КОНАН ДОЙЛ",
                 ImageHash= "24263dcade9dcd8fbd1ef5c6472b1377c7df7f36_full.jpg"

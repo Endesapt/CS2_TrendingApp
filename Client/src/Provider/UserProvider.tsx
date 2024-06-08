@@ -3,37 +3,52 @@ import { UserContextType } from "../Models/UserContextType";
 import axios from "axios";
 
 class UserInfoModel{
-    isAuthorized:boolean;
+    isAuthenticated:boolean;
     userId:number|null;
     userName:string|null;
-    userImageHash:string|null;
+    imageHash:string|null;
 }
 
 export const UserContext=createContext<UserContextType|null>(null);
 function UserProvider({children}:{children:ReactNode}){
     const [userInfo,setUserInfo]=useState<UserInfoModel>();
-    function login(){
+    async function login(){
         const url=new URL('signin',process.env.REACT_APP_AUTH_URL);
         window.location.replace(url);
     }
-    function logout(){}
-    function parseUserInfo(){
-        if(userInfo?.isAuthorized)return;
+    async function logout(){
+        if(!userInfo?.isAuthenticated)return;
+        const url=new URL('signout',process.env.REACT_APP_AUTH_URL);
+        fetch(url,{
+            method:'GET',
+            headers:{'Content-Type':'application/json'},
+            credentials:"include"
+        }).then(()=>{
+            setUserInfo({} as UserInfoModel);
+        });
+        
+    }
+    async function parseUserInfo(){
+        if(userInfo?.isAuthenticated)return;
         const url=new URL('userInfo',process.env.REACT_APP_AUTH_URL);
-        axios.get(url.toString())
+        await fetch(url,{
+            method:'GET',
+            headers:{'Content-Type':'application/json'},
+            credentials:"include"
+          })
             .then(response=>{
-                const data:UserInfoModel=response.data
-                console.log(data);
-                if(!data.isAuthorized)return;
-                setUserInfo(response.data);
+                return response.json()
+            }).then((data:UserInfoModel)=>{
+                if(!data.isAuthenticated)return;
+                setUserInfo(data);
             })
     }
     const props:UserContextType={
-        isAuthorized:false,
-        parsedUserInfo:false,
-        userId:null,
-        userImageHash:null,
-        username:null,
+        isAuthenticated:userInfo?.isAuthenticated??false,
+        parsedUserInfo:true,
+        userId:userInfo?.userId??null,
+        imageHash:userInfo?.imageHash??null,
+        userName:userInfo?.userName??null,
         login:login,
         logout:logout,
         parseUserInfo:parseUserInfo
