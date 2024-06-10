@@ -20,6 +20,7 @@ namespace Server
 
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddHttpClient();
+            builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
             //AUTH
             builder.Services.AddAuthentication(options =>
@@ -71,7 +72,7 @@ namespace Server
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseHttpsRedirection();
-            app.UseCors(builder => builder.WithOrigins("http://localhost:3000")
+            app.UseCors(build => build.WithOrigins(builder.Configuration["APP_HOST"]!)
                             .AllowAnyHeader()
                             .AllowAnyMethod()
                             .AllowCredentials());

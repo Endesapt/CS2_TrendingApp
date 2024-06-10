@@ -13,24 +13,24 @@ export const UserContext=createContext<UserContextType|null>(null);
 function UserProvider({children}:{children:ReactNode}){
     const [userInfo,setUserInfo]=useState<UserInfoModel>();
     async function login(){
-        const url=new URL('signin',process.env.REACT_APP_AUTH_URL);
+        const url=new URL('signin',process.env.REACT_APP_API_URL);
         window.location.replace(url);
     }
     async function logout(){
         if(!userInfo?.isAuthenticated)return;
-        const url=new URL('signout',process.env.REACT_APP_AUTH_URL);
+        const url=new URL('signout',process.env.REACT_APP_API_URL);
         fetch(url,{
             method:'GET',
             headers:{'Content-Type':'application/json'},
             credentials:"include"
-        }).then(()=>{
+        }).finally(()=>{
             setUserInfo({} as UserInfoModel);
         });
         
     }
     async function parseUserInfo(){
         if(userInfo?.isAuthenticated)return;
-        const url=new URL('userInfo',process.env.REACT_APP_AUTH_URL);
+        const url=new URL('userInfo',process.env.REACT_APP_API_URL);
         await fetch(url,{
             method:'GET',
             headers:{'Content-Type':'application/json'},

@@ -51,12 +51,11 @@ services:
     depends_on:
         dbupdateworker:
             condition: service_started
-    ports:
-      - 8081:8081
     networks:
         mynet:
     environment:
         - STEAM_API_KEY=${STEAM_API_KEY}
+        - APP_HOST=http://localhost:8000
   rabbitmq:
     image: rabbitmq:3.10.7-management
     hostname: rabbitmq
@@ -108,29 +107,22 @@ services:
             condition: service_healthy
     networks:
         mynet:
-  steamOpenIDProvider:
-    image: ghcr.io/byo-software/steam-openid-connect-provider
-    environment:
-       - OpenID__RedirectUri=http://localhost:3000/
-       - OpenID__ClientID=steamidp
-       - OpenID__ClientSecret=mysecret
-       - OpenID__ClientName=myclientname
-       - Steam__ApplicationKey=${STEAM_API_KEY}
-       - Hosting__PublicOrigin=http://localhost:3080
-    ports:
-        - 3080:80
-    networks:
-        mynet:
   nginx:
-    image: nginx
+    build:
+        context: ./
+        dockerfile: ./nginx/Dockerfile
+        args:
+            - REACT_APP_API_URL=http://localhost:8000/api/
     volumes:
        - ./nginx/nginx.conf://etc/nginx/nginx.conf:ro
     depends_on:
-        - steamOpenIDProvider
+        - server
     ports:
         - 8000:80
     networks:
         mynet:
+    
+  
 
    
     

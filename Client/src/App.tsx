@@ -10,7 +10,6 @@ import Compare from './Pages/Compare';
 import { useContext } from 'react';
 import { UserContext } from './Provider/UserProvider';
 import { UserContextType } from './Models/UserContextType';
-import { Context } from 'telegraf';
 
 
 
@@ -21,7 +20,7 @@ function App() {
   
   return (
     
-      <div className="flex flex-col h-full text-slate-300">
+      <div className="flex flex-col h-svh text-slate-300">
       <div className=" bg-slate-800 flex">
         <div className='flex items-center flex-col justify-center ml-8'>
           <img alt="logo" src="logo.png"

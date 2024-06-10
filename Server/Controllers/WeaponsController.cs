@@ -7,7 +7,6 @@ using WeaponsClassLibrary;
 
 namespace Server.Controllers
 {
-    [Route("api/")]
     [ApiController]
     public class WeaponsController : ControllerBase
     {
