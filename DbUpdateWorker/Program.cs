@@ -11,7 +11,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     var connStringBuilder = new NpgsqlConnectionStringBuilder()
     {
-        Host = builder.Configuration["DB_HOST"] ?? "crdb",
+        Host = builder.Configuration["DB_HOST"],
         Port = 26257,
         Username = builder.Configuration["DB_USER"] ?? "root",
         Password = builder.Configuration["DB_PASSWORD"] ?? "",

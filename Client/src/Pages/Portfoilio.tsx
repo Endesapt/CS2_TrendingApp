@@ -3,11 +3,14 @@ import { WeaponProfileModel } from "../Models/WeaponProfileModel";
 import WeaponPortfolio from "../Components/WeaponPortfolio";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDollarSign, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
-import { createRef, useEffect, useRef, useState } from "react";
+import { createRef, useContext, useEffect, useRef, useState } from "react";
 import { WeaponTrendingModel } from "../Models/WeaponTrendingModel";
 import WeaponInventory from "../Components/WeaponInventory";
+import { UserContextType } from "../Models/UserContextType";
+import { UserContext } from "../Provider/UserProvider";
 
 export default function Portfolio() {
+    const userContext=useContext(UserContext) as UserContextType;
     const [searchResults,setSearchResults]=useState(new Array<{resultString:string;resultId:string}>(0));
     const [profileWeapons,setProfileWeapons]=useState(new Array<WeaponProfileModel>(0));
     const [search,setSearch]=useState("");
@@ -15,7 +18,9 @@ export default function Portfolio() {
     const [warning,setWarning]=useState("");
     const minPrice=createRef<HTMLInputElement>();
     const maxPrice=createRef<HTMLInputElement>();
+    
     useEffect(()=> {
+        if(!userContext.isAuthenticated)return;
         const queriesUrl = new URL("getQueries",process.env.REACT_APP_API_URL!);
         fetch(
             queriesUrl
@@ -23,7 +28,7 @@ export default function Portfolio() {
         .then((data)=>{
             setProfileWeapons(data);
         });
-    },[])
+    },[userContext])
     useEffect(()=>{
         if(search=="")return;
         const searchUrl=new URL("findWeapons",process.env.REACT_APP_API_URL!);
@@ -79,10 +84,13 @@ export default function Portfolio() {
         })
     }
 
-
-    const procentStyle = 80 > 0 ? "text-green-500" : "text-red-500";
+    if(!userContext.isAuthenticated){
+        return <div className="ml-10 mt-12 flex flex-col gap-6">
+            <div className="text-3xl font-bold text-slate-200"> You should sign in with Steam to see your inventory</div>
+        </div>
+    }
     return (<div className=" mt-12 ml-10 flex flex-col gap-12">
-        <h1 className=' text-4xl font-bold dark:text-slate-300 text-muted-800'>Конан Дойл's Portfolio</h1>
+        <h1 className=' text-4xl font-bold dark:text-slate-300 text-muted-800'>{userContext.userName}'s Portfolio</h1>
         <p className=" text-2xl font-bold dark:text-slate-300 text-muted-800 "> Add new event to your portfolio</p>
         <div className="rounded-lg border border-slate-600 bg-slate-800 w-fit p-8 flex flex-col gap-5">
             {modelWeapon.classId?

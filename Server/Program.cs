@@ -3,10 +3,13 @@ using Elastic.Clients.Elasticsearch;
 using Elastic.Transport;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using Npgsql;
 using Server.Services.Implementation;
 using Server.Services.Interfaces;
 using WeaponsClassLibrary.Data;
+using AspNet.Security.OpenId;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Server
 {
@@ -17,6 +20,22 @@ namespace Server
 
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddHttpClient();
+            builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+
+            //AUTH
+            builder.Services.AddAuthentication(options =>
+                {
+                    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                })
+
+            .AddCookie(options =>
+            {
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.SameSite = SameSiteMode.None;
+                options.LoginPath = "/login";
+                options.LogoutPath = "/signout";
+            })
+            .AddSteam();
 
             // Add services to the container.
             builder.Services.AddTransient<IUserQueryService, UserQueryService>();
@@ -35,6 +54,7 @@ namespace Server
                 connStringBuilder.Database = "db";
                 options.UseNpgsql(connStringBuilder.ConnectionString);
             });
+            
             builder.Services.AddControllers();
             builder.Services.AddHttpContextAccessor();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -49,17 +69,15 @@ namespace Server
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
-            app.UseHttpsRedirection();
-
+            app.UseAuthentication();
             app.UseAuthorization();
-
-            app.UseCors(builder => builder.AllowAnyOrigin()
+            app.UseHttpsRedirection();
+            app.UseCors(build => build.WithOrigins(builder.Configuration["APP_HOST"]!)
                             .AllowAnyHeader()
-                            .AllowAnyMethod());
-
+                            .AllowAnyMethod()
+                            .AllowCredentials());
+            
             app.MapControllers();
-
             app.Run();
         }
     }

@@ -7,10 +7,20 @@ import Trending from './Pages/Trending';
 import Inventory from './Pages/Inventory';
 import Portfolio from './Pages/Portfoilio';
 import Compare from './Pages/Compare';
+import { useContext } from 'react';
+import { UserContext } from './Provider/UserProvider';
+import { UserContextType } from './Models/UserContextType';
+
+
+
 
 function App() {
+  const userContext=useContext(UserContext) as UserContextType;
+  userContext.parseUserInfo();
+  
   return (
-    <div className="flex flex-col h-full text-slate-300">
+    
+      <div className="flex flex-col h-svh text-slate-300">
       <div className=" bg-slate-800 flex">
         <div className='flex items-center flex-col justify-center ml-8'>
           <img alt="logo" src="logo.png"
@@ -35,8 +45,10 @@ function App() {
           </Link>
         </div>
         <div className='flex items-center flex-col justify-center mr-8'>
-          <img alt="source" src="https://avatars.akamai.steamstatic.com/24263dcade9dcd8fbd1ef5c6472b1377c7df7f36_full.jpg"
-            className=' h-14 w-14 rounded-full'/>
+          {userContext.isAuthenticated?<img alt="source" src={`https://avatars.akamai.steamstatic.com/${userContext.imageHash}`}
+            className=' h-14 w-14 rounded-full'/>: 
+            <div onClick={()=>{userContext.login()}} className='h-14 w-14 rounded-full bg-slate-800 flex items-center hover:cursor-pointer'>LOGIN</div>}
+            {userContext.isAuthenticated?<div className='hover:cursor-pointer' onClick={()=>{userContext.logout()}}>LOGOUT</div>:null}
         </div>
       </div>
       <div className="h-full bg-slate-900 overflow-scroll grid grid-cols-[1fr_auto_1fr]">
@@ -51,6 +63,7 @@ function App() {
           <div></div>
       </div>
     </div>
+    
   );
 }
 

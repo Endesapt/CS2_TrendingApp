@@ -25,6 +25,7 @@ services:
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_USER=user
       - RABBITMQ_PASS=1234
+      - DB_HOST=crdb
     networks:
         mynet:
   crdb:
@@ -50,10 +51,11 @@ services:
     depends_on:
         dbupdateworker:
             condition: service_started
-    ports:
-      - 8081:8081
     networks:
         mynet:
+    environment:
+        - STEAM_API_KEY=${STEAM_API_KEY}
+        - APP_HOST=http://localhost:8000
   rabbitmq:
     image: rabbitmq:3.10.7-management
     hostname: rabbitmq
@@ -93,7 +95,7 @@ services:
     build:
         context: ./TelegramSender/
     environment:
-        - BOT_TOKEN=7033082281:AAGx9SKXhKldF1qBbqdLIhB44_93Sq80oII
+        - BOT_TOKEN=${TG_BOT_KEY}
         - REDIS_USER=default
         - REDIS_PASSWORD=1234
         - REDIS_HOST=redis
@@ -105,7 +107,22 @@ services:
             condition: service_healthy
     networks:
         mynet:
-        
+  nginx:
+    build:
+        context: ./
+        dockerfile: ./nginx/Dockerfile
+        args:
+            - REACT_APP_API_URL=http://localhost:8000/api/
+    volumes:
+       - ./nginx/nginx.conf://etc/nginx/nginx.conf:ro
+    depends_on:
+        - server
+    ports:
+        - 8000:80
+    networks:
+        mynet:
+    
+  
 
    
     
